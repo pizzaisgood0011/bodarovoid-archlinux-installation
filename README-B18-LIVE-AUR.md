@@ -1,0 +1,7 @@
+# Bodarovoid B18 — live search and automatic AUR builds (experimental)
+
+This preview adds `fzf` change-triggered online search for Arch official repositories (`pacman -Ssq`) and AUR (`curl`/`jq` to AUR RPC). It uses a 250 ms debounce and 5-second HTTP timeout. Install `fzf curl jq` in the live ISO before launching the installer. Internet access is required for search and package downloads.
+
+Selected AUR packages are automatically fetched, built as a dedicated unprivileged `bv-aur-builder` account in the target chroot, and installed with `pacman -U`. The installer requires an additional `BUILD AUR` confirmation. PKGBUILDs are community-controlled scripts; do not select packages you do not trust. `makepkg --nodeps` deliberately avoids giving build scripts privileged dependency-install permissions; the subsequent `pacman -U` verifies package dependencies. Some AUR packages need dependencies that this experimental implementation does not resolve and will cause installation to stop with an error. No AUR helper is installed. AUR packages are built in selection order, not dependency order.
+
+**Safety:** This release retains the existing VirtualBox/VMware-only disk guard and must not be used on physical drives. Live package search and AUR build execution are not tested end-to-end here. Use a disposable VM and snapshot. The AUR stage runs after the official `pacstrap` and before user setup; on failure, the installer reports an incomplete install, not a success. No automatic rollback of already-written partitions is possible.
